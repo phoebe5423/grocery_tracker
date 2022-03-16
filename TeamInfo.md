@@ -9,8 +9,8 @@
 | Member1     |  hhchen3@illinois.edu  |
 | Member2     |   Grant Chen           |
 | Member2     | grantac2@illinois.edu  |
-| Member2     |      Shiyi Yang        |
-| Member2     | yang158@illinois.edu  |
+| Member3     |      Shiyi Yang        |
+| Member3     | yang158@illinois.edu  |
 
 ## Project Information
 
