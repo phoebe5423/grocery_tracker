@@ -82,8 +82,10 @@ app.post('/search', function (req, res, next) {
             res.send('Error in database operation');
         } else {
             console.log('The solution is: ', result);
+            console.log('test')
             //res.send(result);
             res.render('productList', { data: result });
+            console.log('search')
         }
     });
 });
