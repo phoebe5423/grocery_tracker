@@ -28,7 +28,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(__dirname + '../public'));
+//app.use(express.static(__dirname + '../public'));
+app.use("/public", express.static(__dirname + "/views/public"));
 
 app.use(session({
     secret: '123456catr',
