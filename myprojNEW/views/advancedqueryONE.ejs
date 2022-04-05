@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Most Popular Products By City</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  </head>
+
+  <body>
+     <div class="container">
+        <h1 class="display-4 text-center py-1">Most Popular Products By Store</H1>
+        <!-- input area -->
+        <div class="jumbotron p-3 shadow-sm">
+            <form action="/aqOneSearch" method="post">
+                <div class="d-flex align-items-center">
+                    <input autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;" id="keyword" placeholder="City" name="keyword">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        <!-- // input area -->
+        <!-- list area -->
+        <ul class="list-group pb-5">
+            <% for(list in data) { %>
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <span class="item-text">
+                        <%- data[list].temp %>
+                    </span>
+                    <span class="item-text">
+                        <%- data[list].temp2 %>
+                    </span>
+                </li>
+                <% } %>
+
+                    <!-- //list area -->
+          </ul>
+  </body>
+</html>
