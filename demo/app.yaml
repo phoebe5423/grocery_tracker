@@ -1,0 +1,25 @@
+runtime: python38
+
+
+instance_class: F1
+
+env_variables:
+#  MYSQL_USER: 'root'
+#  MYSQL_PASSWORD: 'test1234'
+#  MYSQL_DB: 'GroceryTracker'
+#  MYSQL_HOST: '34.66.108.84'
+#  MYSQL_CONNECTION_NAME: 'cs411-pt1-team048:us-central1:workshop-cs411-sp22'
+  DB_USER: 'root'
+  DB_PASS: 'test1234'
+  DB_NAME: 'GroceryTracker'
+  DB_HOST: '34.66.108.84'
+  DB_PORT: '3306'
+  INSTANCE_CONNECTION_NAME: 'cs411-pt1-team048:us-central1:workshop-cs411-sp22'
+
+handlers:
+  - url: /img
+    static_dir: static/image
+  - url: /js
+    static_dir: static/js
+  - url: /css
+    static_dir: static/css

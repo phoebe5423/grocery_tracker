@@ -16,8 +16,8 @@
 
 |   Info      |        Description     |
 | ----------- | ---------------------- |
-|  Title      | Household Grocery Tracker |
-| System URL  |      link_to_system    |
+|  Title      | Grocery Tracker |
+| System URL  |      [Homepage](http://cs411-pt1-team048.uc.r.appspot.com/)    |
 | Video Link  |      link_to_video     |
 
 ### Project Summary

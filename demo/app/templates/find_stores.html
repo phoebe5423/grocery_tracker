@@ -1,0 +1,229 @@
+
+{% block title %}Grocery Stores{% endblock %}
+{% extends "base.html" %}
+{% block body %}
+
+    <section class="item">
+        <div class="container">
+
+            <form action="/store/search" method="POST" class="search-form my-2 my-lg-0" id="search-box">
+
+                <input type="text" name="search_word" class="search_box" placeholder="Search store name..."
+                       id="search-box"
+                       class='search_box'>
+                <button type="submit" for="search-box" class="fas fa-search"></button>
+            </form>
+        </div>
+        <!-- Button trigger modal -->
+        <div class="container-add" style="text-align: right;white-space: nowrap;">
+        <span>Can't find?
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#store-modal">Create New Store!</button>
+        </span>
+
+        </div>
+
+
+        <!-- Create New Store Button trigger modal -->
+        <div class="modal fade" id="store-modal" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="Label">Create New Store</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('store_create') }}" method="POST" id="form-new-store" class="form-create">
+                        <div class="modal-body">
+                            <div class="input-group mb-3">
+                                <div class="name-group-prepend">
+                                    <span class="input-group-text">Store Name</span>
+                                </div>
+                                <input type="text" class="form-control" name="store_name" placeholder="Costco">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="plu-group-prepend">
+                                    <span class="input-group-text">Open Hours</span>
+                                </div>
+                                <input type="text" class="form-control" name="open_hr" placeholder="10AM–8:30PM">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Address</span>
+                                </div>
+                                <input type="text" class="form-control" name="address" placeholder="2002 N Neil St">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">City</span>
+                                </div>
+                                <input type="text" class="form-control" name="city" placeholder="Champaign">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">State</span>
+                                </div>
+                                <input type="text" class="form-control" name="state" placeholder="IL">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Postal Code</span>
+                                </div>
+                                <input type="text" class="form-control" name="postal" placeholder="61820">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Phone</span>
+                                </div>
+                                <input type="text" class="form-control" name="phone" placeholder="217-600-6538">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button id="submit-new-store" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container table-responsive">
+            <!-- Alert Message -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                            {{ message }}
+                            <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">X</button>-->
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+
+            <table class="table table-striped">
+
+                <thead>
+                <tr>
+                    <th class="store_name" style="width:10%">Store</th>
+                    <th class="open_hr" style="width:18%">Open Hours</th>
+                    <th class="address" style="width:18%">Address</th>
+                    <th class="city" style="width:15%">City</th>
+                    <th class="state" style="width:6%">State</th>
+                    <th class="postal" style="width:8%">Postal</th>
+                    <th class="phone" style="width:15%">Phone</th>
+                    <th class="update" style="width:6%"> Edit</th>
+                    <th class="update" style="width:6%"> Remove</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for store in store_lst %}
+                    <tr>
+                        <td>{{ store.store_name }}</td>
+                        <td>{{ store.open_hr }}</td>
+                        <td>{{ store.address }}</td>
+                        <td>{{ store.city }}</td>
+                        <td>{{ store.state }}</td>
+                        <td>{{ store.postal }}</td>
+                        <td>{{ store.phone }}</td>
+
+                        <td>
+                            <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                    data-bs-target="#modal-edit-store{{store.store_id}}"><i
+                                    class="fa fa-pen" aria-hidden="true"></i></button>
+                        </td>
+                        <td>
+                            <a href="/store/delete/{{ store.store_id }}" type="button" class="btn btn-danger btn-delete"
+                               id="{{ store.store_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                    class="fa fa-trash" aria-hidden="true"></i></a>
+
+                        </td>
+                    </tr>
+                    <!-- Modal Edit -->
+                    <div id="modal-edit-store{{ store.store_id }}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Update Store</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form action="{{ url_for('store_update') }}" method="POST" id="form-edit-store">
+                                    <div class="modal-body">
+                                        <div class="input-group mb-3">
+                                            <div class="group-prepend">
+                                            <span class="input-group-text">Store Name</span>
+                                            </div>
+                                            <input type="hidden" name="prod_id" value="{{ store.store_id }}">
+                                            <input type="text" class="form-control" name="store_name_edit"
+                                                   value="{{ store.store_name }}">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <div class="plu-group-prepend">
+                                                <span class="input-group-text"><label>Open Hours</label></span>
+                                            </div>
+                                            <input type="text" class="form-control" name="open_hr_edit"
+                                                   value="{{ store.open_hr }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>Address</label></span>
+                                                <input type="text" class="form-control" name="address_edit"
+                                                       value="{{ store.address }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>City</label></span>
+                                                <input type="text" class="form-control" name="city_edit"
+                                                       value="{{ store.city }}" >
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>State</label></span>
+                                                <input type="text" class="form-control" name="state_edit"
+                                                       value="{{ store.state }}" >
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>Postal</label></span>
+                                                <input type="text" class="form-control" name="postal_edit"
+                                                       value="{{ store.postal }}" >
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>Phone</label></span>
+                                                <input type="text" class="form-control" name="phone_edit"
+                                                       value="{{ store.phone }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button id="submit-edit-store" type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+
+{% endblock %}

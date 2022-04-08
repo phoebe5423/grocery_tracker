@@ -1,0 +1,238 @@
+{% block title %}Product List{% endblock %}
+{% extends "base.html" %}
+{% block body %}
+
+    <section class="item">
+        <div class="container">
+
+            <form action="/product/search" method="POST" class="search-form my-2 my-lg-0" id="search-box">
+
+                <input type="text" name="search_word" class="search_box" placeholder="Search product name..."
+                       id="search-box"
+                       class='search_box'>
+                <button type="submit" for="search-box" class="fas fa-search"></button>
+            </form>
+        </div>
+        <!-- Button trigger modal -->
+        <div class="container-add" style="text-align: right;white-space: nowrap;">
+        <span>Can't find?
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#item-modal"
+                data-source="New Product">Create Your Own Product!</button>
+        </span>
+
+        </div>
+
+
+        <!-- Create New Product Button trigger modal -->
+        <div class="modal fade" id="item-modal" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="Label">Create New Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('product_create') }}" method="POST" id="form-new-prod">
+                        <div class="modal-body">
+                            <div class="input-group mb-3">
+                                <div class="name-group-prepend">
+                                    <span class="input-group-text" id="name-form-display"
+                                          aria-describedby="basic-addon1">Product Name</span>
+                                </div>
+                                <input type="text" class="form-control" name="prod_name" placeholder="chocolate"
+                                       aria-label="prod-info" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="plu-group-prepend">
+                                    <span class="input-group-text" id="plu-form-display"
+                                          aria-describedby="basic-addon2">PLU code</span>
+                                </div>
+                                <input type="text" class="form-control" name="plu_code" placeholder="1423"
+                                       aria-label="prod-info"
+                                       aria-describedby="basic-addon2">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="life-form-display"
+                                          aria-describedby="basic-addo3">Lifespan</span>
+                                </div>
+                                <input type="text" class="form-control" name="lifespan" placeholder="60"
+                                       aria-label="prod-info"
+                                       aria-describedby="basic-addon3">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="cal-form-display"
+                                          aria-describedby="basic-addon4">calories</span>
+                                </div>
+                                <input type="text" class="form-control" name="cal" placeholder="350"
+                                       aria-label="prod-info"
+                                       aria-describedby="basic-addon4">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button id="submit-new-prod" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container table-responsive">
+            <!-- Alert Message -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                            {{ message }}
+                            <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">X</button>-->
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+
+            <table class="table table-striped">
+
+                <thead>
+                <tr>
+                    <th class="name" style="width:31%">Product Name</th>
+                    <th class="plu_code" style="width:15%">PLU code</th>
+                    <th class="lifespan" style="width:15%">lifespan (days)</th>
+                    <th class="cal" style="width:15%">Calories</th>
+                    <th class="add" style="width:6%"> Add</th>
+                    <th class="buy" style="width:6%"> Buy</th>
+                    <th class="update" style="width:6%"> Edit</th>
+                    <th class="update" style="width:6%"> Remove</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td>Apple</td>
+                    <td>2010</td>
+                    <td>21</td>
+                    <td>50</td>
+
+                    <td>
+                        <button type="button" class="btn btn-warning add" data-bs-toggle="modal"
+                                data-bs-target="#item-modal"
+                                data-source="27"><i class="fa fa-plus " aria-hidden="true"></i></button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info buy" data-source="27"><i class="fa fa-shopping-cart"
+                                                                                           aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                data-bs-target="#item-modal"
+                                data-source="27" data-content="27"><i class="fa fa-pen" aria-hidden="true"></i></button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove" data-source="27"
+                                onclick="return confirm('Are You Sure To Delete ?')"><i class="fa fa-trash"
+                                                                                        aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.prod_name }}</td>
+                        <td>{{ item.plu_code }}</td>
+                        <td>{{ item.lifespan }}</td>
+                        <td>{{ item.cal }}</td>
+                        <td>
+                            <button type="button" class="btn btn-warning add" data-bs-toggle="modal"
+                                    data-bs-target="#modal-add-inventory"
+                                    data-source="{{ item.prod_id }}"><i class="fa fa-plus " aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info buy" data-bs-toggle="modal"
+                                    data-bs-target="#modal-add-shopping" data-source="{{ item.prod_id }}"><i
+                                    class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+                        </td>
+                        <td>
+
+                            <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                    data-bs-target="#modal-edit-product{{ item.prod_id }}"
+                                    data-source="{{ item.prod_id }}" data-content="{{ item.prod_name }}"><i
+                                    class="fa fa-pen" aria-hidden="true"></i></button>
+                        </td>
+                        <td>
+
+                            <a href="/product/delete/{{ item.prod_id }}" type="button" class="btn btn-danger btn-delete"
+                               id="{{ item.prod_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                    class="fa fa-trash" aria-hidden="true"></i></a>
+
+                        </td>
+                    </tr>
+                    <!-- Modal Edit Product-->
+                    <div id="modal-edit-product{{ item.prod_id }}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Update Product</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form action="{{ url_for('product_update') }}" method="POST" id="form-edit-prod">
+                                    <div class="modal-body">
+                                        <div class="input-group mb-3">
+                                            <div class="group-prepend">
+                                            <span class="input-group-text" id="name-form-display"
+                                                  aria-describedby="basic-addon1">Product Name</span>
+                                            </div>
+                                            <input type="hidden" name="prod_id" value="{{ item.prod_id }}">
+
+                                            <input type="text" class="form-control" name="prod_name_edit"
+                                                   value="{{ item.prod_name }}">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <div class="plu-group-prepend">
+                                                <span class="input-group-text"><label>PLU code</label></span>
+                                            </div>
+                                            <input type="text" class="form-control" name="plu_code_edit"
+                                                   value="{{ item.plu_code }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>Lifespan</label></span>
+                                                <input type="text" class="form-control" name="lifespan_edit"
+                                                       value="{{ item.lifespan }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><label>Calories</label></span>
+                                                <input type="text" class="form-control" name="cal_edit"
+                                                       value="{{ item.cal }}" placeholder="350">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+
+{% endblock %}

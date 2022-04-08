@@ -1,0 +1,160 @@
+
+{% block title %}Grocery Stores{% endblock %}
+{% extends "base.html" %}
+{% block body %}
+
+    <section class="home">
+        <div class="container" style="text-align: right">
+        <button type="button" class="btn new"><a href="all_items.html">Add items</a></button>
+        </div>
+
+
+        <div class="tabs">
+
+            <input type="radio" class="tablinks" name="tabs-tablinks" id="Fridge" checked>
+
+            <label for="Fridge" class="tabs__label"><h3>Fridge</h3></label>
+
+            <div class="tabscontent">
+                <div class="container table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="name" style="width:44%">Item</th>
+                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="expiration" style="width:20%">Used By</th>
+                            <th class="update" style="width:8%">Edit</th>
+                            <th class="update" style="width:8%">Remove</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for item in fridge %}
+                        <tr>
+                            <td>Apple</td>
+                            <td>21</td>
+                            <td>Lb</td>
+                            <td>2022-05-06</td>
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#item-edit-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+
+                        <tr>
+                            {% if item.space == "Fridge" %}
+                            <td>{{item.item_name}}</td>
+                            <td>{{item.amount}}</td>
+                            <td>{{item.unit}}</td>
+                            <td>{{item.exp_date}}</td>
+                            {%endif%}
+
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"
+                                        data-source="{{item.id}}" data-content="{{item.item_name}}"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove" data-source="{{item.id}}"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <input type="radio" class="tablinks" name="tabs-tablinks" id="Freezer">
+            <label for="Freezer" class="tabs__label"><h3>Freezer</h3></label>
+            <div class="tabscontent">
+                <div class="container table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="name" style="width:44%">Item</th>
+                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="expiration" style="width:20%">Used By</th>
+                            <th class="update" style="width:8%">Edit</th>
+                            <th class="update" style="width:8%">Remove</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for item in freezer %}
+
+                        <tr>
+                            <td>Apple</td>
+                            <td>21</td>
+                            <td>Lb</td>
+                            <td>2022-05-06</td>
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+
+                        <tr>
+                            {% if item.space == "Freezer" %}
+                            <td>{{item.item_name}}</td>
+                            <td>{{item.amount}}</td>
+                            <td>{{item.unit}}</td>
+                            <td>{{item.exp_date}}</td>
+                            {%endif%}
+
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <input type="radio" class="tablinks" name="tabs-tablinks" id="Pantry">
+            <label for="Pantry" class="tabs__label"><h3>Pantry</h3></label>
+            <div class="tabscontent">
+                <div class="container table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="name" style="width:44%">Item</th>
+                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="expiration" style="width:20%">Used By</th>
+                            <th class="update" style="width:8%">Edit</th>
+                            <th class="update" style="width:8%">Remove</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for item in pantry %}
+
+                        <tr>
+                            <td>Apple</td>
+                            <td>21</td>
+                            <td>Lb</td>
+                            <td>2022-05-06</td>
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+
+                        <tr>
+                            {% if item.space == "Pantry" %}
+                            <td>{{item.item_name}}</td>
+                            <td>{{item.amount}}</td>
+                            <td>{{item.unit}}</td>
+                            <td>{{item.exp_date}}</td>
+                            {%endif%}
+
+                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
+                            <td><button type="button" class="btn btn-danger remove"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        </section>
+
+        <div class="container table-responsive">
+
+
+        </div>
+
+
+
+{% endblock %}
