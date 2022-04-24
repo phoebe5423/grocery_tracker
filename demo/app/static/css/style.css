@@ -96,6 +96,7 @@ a {
 .table .btn-info {
   background-color: #DBD76D;
   border-color: #DBD76D;
+
 }
 
 .table .btn-info:hover {
@@ -128,22 +129,30 @@ a {
   padding: 1rem 5%;
 }
 
+/*.header a:hover {*/
+/*  filter: brightness(0.5);*/
+/*}*/
+
+.btn:focus{
+  border: none;
+}
+
 .navbar-brand {
   font-size: 2.5rem;
   font-weight: bolder;
   color: #222;
 }
 
-.navbar-brand:hover {
-  filter: brightness(0.5);
-}
+/*.navbar-brand:hover {*/
+/*  filter: brightness(0.5);*/
+/*}*/
 
-.navbar-brand i {
+.header a i {
   color: #5f9ea0;
   padding-right: .5rem;
 }
 
-.header .navbar-brand  i:hover {
+.header .a  i:hover {
   color: #5f9ea0;
 }
 
@@ -446,6 +455,17 @@ a {
   }
 }
 
+
+.bootstrap-iso form{
+  /*font-family: Arial, Helvetica, sans-serif; */
+  color: black}
+.bootstrap-iso form button,
+.bootstrap-iso form button:hover{
+  color: white !important;}
+.asteriskField{
+  color: red;}
+
+
 /*# sourceMappingURL=style.css.map */
 
 /*Sign-in*/
@@ -463,6 +483,7 @@ a {
 /*  padding-bottom: 40px;*/
 /*  background-color: #f5f5f5;*/
 /*}*/
+
 .form-create {
   width: 100%;
   max-width: 500px;

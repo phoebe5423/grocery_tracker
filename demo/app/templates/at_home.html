@@ -1,13 +1,11 @@
-
 {% block title %}Grocery Stores{% endblock %}
 {% extends "base.html" %}
 {% block body %}
 
     <section class="home">
         <div class="container" style="text-align: right">
-        <button type="button" class="btn new"><a href="all_items.html">Add items</a></button>
+            <button type="button" class="btn new"><a href="{{ url_for('product_list') }}">Add items</a></button>
         </div>
-
 
         <div class="tabs">
 
@@ -17,8 +15,8 @@
 
             <div class="tabscontent">
                 <div class="container table-responsive">
-                <table class="table table-striped">
-                    <thead>
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
                             <th class="name" style="width:44%">Item</th>
                             <th class="amount" colspan="2" style="width:20%">Amount</th>
@@ -26,43 +24,107 @@
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
                         </tr>
-                    </thead>
+                        </thead>
 
-                    <tbody>
-                    {% for item in fridge %}
-                        <tr>
-                            <td>Apple</td>
-                            <td>21</td>
-                            <td>Lb</td>
-                            <td>2022-05-06</td>
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#item-edit-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+                        <tbody>
+                        <!--
+                        {#                        <tr>#}
+                        {#                            <td>Apple</td>#}
+                        {#                            <td>21</td>#}
+                        {#                            <td>Lb</td>#}
+                        {#                            <td>2022-05-06</td>#}
+                        {#                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#item-edit-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>#}
+                        {#                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>#}
+                        {#                        </tr>#}
+                        -->
+                        {% for item in fridge %}
+                            <tr>
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ item.amount }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.exp_date }}</td>
 
-                        <tr>
-                            {% if item.space == "Fridge" %}
-                            <td>{{item.item_name}}</td>
-                            <td>{{item.amount}}</td>
-                            <td>{{item.unit}}</td>
-                            <td>{{item.exp_date}}</td>
-                            {%endif%}
+                                <td>
+                                    <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                            data-bs-target="#modal-edit-inv{{ item.inv_id }}"><i
+                                            class="fa fa-pen"></i></button>
+                                </td>
+                                <td><a href="/inventory-delete/{{ item.inv_id }}" type="button"
+                                       class="btn btn-danger btn-delete"
+                                       id="{{ item.inv_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                        class="fa fa-trash" aria-hidden="true"></i></a></td>
 
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"
-                                        data-source="{{item.id}}" data-content="{{item.item_name}}"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove" data-source="{{item.id}}"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+
+                            <!-- Modal Edit Inventory-->
+                            <div id="modal-edit-inv{{ item.inv_id }}" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Edit Item</h4>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ url_for('inventory_update') }}" method="POST" id="form-edit-inv">
+                                            <div class="modal-body">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">Item Name</span>
+                                                    <input type="hidden" name="inv_id" value="{{ item.inv_id }}">
+                                                    <input type="text" class="form-control" name="inv_name_edit"
+                                                           value="{{ item.item_name }}">
+                                                </div>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text"><label>Amount</label></span>
+                                                    <input type="text" class="form-control" name="amount_edit"
+                                                           value="{{ item.amount }}">
+                                                </div>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text"><label>Unint</label></span>
+                                                    <input type="text" class="form-control" name="unit_edit"
+                                                           value="{{ item.unit }}">
+                                                </div>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text"><label>Expiration Date</label></span>
+                                                    <input type="text" class="form-control" name="date_edit"
+                                                           value="{{ item.exp_date }}" placeholder="350">
+                                                </div>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
+
+                                                    <select class="form-select">
+                                                        <option selected>Choose a space..</option>
+                                                        <option name="space_edit" value="fridge" selected >Fridge</option>
+                                                        <option name="space_edit" value="freezer">Freezer</option>
+                                                        <option name="space_edit" value="pantry">Pantry</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="form-group">
+                                                    <button type="button" class="btn btn-secondary "
+                                                            data-bs-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save
+                                                        changes
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         {% endfor %}
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <input type="radio" class="tablinks" name="tabs-tablinks" id="Freezer">
             <label for="Freezer" class="tabs__label"><h3>Freezer</h3></label>
             <div class="tabscontent">
                 <div class="container table-responsive">
-                <table class="table table-striped">
-                    <thead>
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
                             <th class="name" style="width:44%">Item</th>
                             <th class="amount" colspan="2" style="width:20%">Amount</th>
@@ -70,35 +132,89 @@
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
                         </tr>
-                    </thead>
+                        </thead>
 
-                    <tbody>
-                    {% for item in freezer %}
+                        <tbody>
+                        {% for item in freezer %}
+                            <tr>
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ item.amount }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.exp_date }}</td>
 
-                        <tr>
-                            <td>Apple</td>
-                            <td>21</td>
-                            <td>Lb</td>
-                            <td>2022-05-06</td>
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+                                <td>
+                                    <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                            data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger remove"><i class="fa fa-trash"
+                                                                                           aria-hidden="true"></i>
+                                    </button>
+                                </td>
 
-                        <tr>
-                            {% if item.space == "Freezer" %}
-                            <td>{{item.item_name}}</td>
-                            <td>{{item.amount}}</td>
-                            <td>{{item.unit}}</td>
-                            <td>{{item.exp_date}}</td>
-                            {%endif%}
+                                <!-- Modal Edit Inventory-->
+                                <div id="modal-edit-inv{{ item.inv_id }}" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Edit Item</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url_for('inventory_update') }}" method="POST" id="form-edit-inv">
+                                                <div class="modal-body">
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text">Item Name</span>
+                                                        <input type="hidden" name="inv_id" value="{{ item.inv_id }}">
+                                                        <input type="text" class="form-control" name="inv_name_edit"
+                                                               value="{{ item.item_name }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Amount</label></span>
+                                                        <input type="text" class="form-control" name="amount_edit"
+                                                               value="{{ item.amount }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Unint</label></span>
+                                                        <input type="text" class="form-control" name="unit_edit"
+                                                               value="{{ item.unit }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Expiration Date</label></span>
+                                                        <input type="text" class="form-control" name="date_edit"
+                                                               value="{{ item.exp_date }}" placeholder="350">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
 
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+                                                        <select class="form-select">
+                                                            <option selected>Choose a space..</option>
+                                                            <option name="space_edit" value="fridge" >Fridge</option>
+                                                            <option name="space_edit" value="freezer" selected>Freezer</option>
+                                                            <option name="space_edit" value="pantry">Pantry</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <div class="form-group">
+                                                        <button type="button" class="btn btn-secondary "
+                                                                data-bs-dismiss="modal">
+                                                            Close
+                                                        </button>
+                                                        <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save
+                                                            changes
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                         {% endfor %}
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -106,8 +222,8 @@
             <label for="Pantry" class="tabs__label"><h3>Pantry</h3></label>
             <div class="tabscontent">
                 <div class="container table-responsive">
-                <table class="table table-striped">
-                    <thead>
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
                             <th class="name" style="width:44%">Item</th>
                             <th class="amount" colspan="2" style="width:20%">Amount</th>
@@ -115,46 +231,99 @@
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
                         </tr>
-                    </thead>
+                        </thead>
 
-                    <tbody>
-                    {% for item in pantry %}
+                        <tbody>
+                        {% for item in pantry %}
+                            <tr>
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ item.amount }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.exp_date }}</td>
 
-                        <tr>
-                            <td>Apple</td>
-                            <td>21</td>
-                            <td>Lb</td>
-                            <td>2022-05-06</td>
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+                                <td>
+                                    <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                            data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger remove"><i class="fa fa-trash"
+                                                                                           aria-hidden="true"></i>
+                                    </button>
+                                </td>
 
-                        <tr>
-                            {% if item.space == "Pantry" %}
-                            <td>{{item.item_name}}</td>
-                            <td>{{item.amount}}</td>
-                            <td>{{item.unit}}</td>
-                            <td>{{item.exp_date}}</td>
-                            {%endif%}
 
-                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                            <td><button type="button" class="btn btn-danger remove"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        </tr>
+
+                                <!-- Modal Edit Inventory-->
+                                <div id="modal-edit-inv{{ item.inv_id }}" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Edit Item</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url_for('inventory_update') }}" method="POST" id="form-edit-inv">
+                                                <div class="modal-body">
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text">Item Name</span>
+                                                        <input type="hidden" name="inv_id" value="{{ item.inv_id }}">
+                                                        <input type="text" class="form-control" name="inv_name_edit"
+                                                               value="{{ item.item_name }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Amount</label></span>
+                                                        <input type="text" class="form-control" name="amount_edit"
+                                                               value="{{ item.amount }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Unint</label></span>
+                                                        <input type="text" class="form-control" name="unit_edit"
+                                                               value="{{ item.unit }}">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text"><label>Expiration Date</label></span>
+                                                        <input type="text" class="form-control" name="date_edit"
+                                                               value="{{ item.exp_date }}" placeholder="350">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
+
+                                                        <select class="form-select">
+                                                            <option selected>Choose a space..</option>
+                                                            <option name="space_edit" value="fridge">Fridge</option>
+                                                            <option name="space_edit" value="freezer">Freezer</option>
+                                                            <option name="space_edit" value="pantry" selected>Pantry</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <div class="form-group">
+                                                        <button type="button" class="btn btn-secondary "
+                                                                data-bs-dismiss="modal">
+                                                            Close
+                                                        </button>
+                                                        <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save
+                                                            changes
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                         {% endfor %}
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        </section>
+    </section>
 
-        <div class="container table-responsive">
-
-
-        </div>
-
+    <div class="container table-responsive">
+    </div>
 
 
 {% endblock %}
