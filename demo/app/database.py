@@ -3,17 +3,17 @@ from app import db
 import random
 
 
-def fetch_product(search=False, search_word=None) -> dict:
+def fetch_product(search_word=None) -> list:
     """Reads all items listed in the Product table
 
     :return: A list of dictionaries
     """
-    if search in ['all', 'All', 'ALL', ' ', '']:
+    query = "Select * from Product order by ProductName;"
+    if search_word in ['all', 'All', 'ALL', ' ', '']:
         query = "Select * from Product order by ProductName;"
-    elif search:
+    elif search_word is not None:
+
         query = "Select * from Product where ProductName like '%s' order by ProductName;" % ('%%' + search_word + '%%')
-    else:
-        return None
 
     conn = db.connect()
     query_results = conn.execute(query).fetchall()
@@ -32,28 +32,159 @@ def fetch_product(search=False, search_word=None) -> dict:
 
         product_lst.append(item)
         ct += 1
-        if ct > 30:
+        if ct > 50:
             break
 
     return product_lst
 
-def fetch_shopping_list(customer_id='27') -> dict:
 
+def fetch_procedure_minPriceArea(prod_id):
+
+    connection = db.raw_connection()
+    cursor = connection.cursor()
+    cursor.callproc("minPriceArea", [prod_id, ])
+    results = cursor.fetchall()
+    cursor.close()
+
+    if len(results) ==0:
+        return ("na","na",0)
+
+    return results[0]
+
+def fetch_procedure_sumShoppingList(shopping_id, prod_id):
+    if prod_id is None:
+        return 0
+    connection = db.raw_connection()
+    cursor = connection.cursor()
+    cursor.callproc("sumShoppingList", [shopping_id, ])
+    results = cursor.fetchone()
+    cursor.close()
+
+    return results[0]
+
+
+def fetch_shopping_list(customer_id='27') -> list:
     conn = db.connect()
-    query = "select * from ShoppingList where customerid='{}';".format(customer_id)
+    query = "SELECT lst.ShoppingID, ListName, inc.ProductID, ProductName, Amount, Unit, ItemName " \
+            "FROM ShoppingList lst left Join include inc on lst.ShoppingID = inc.ShoppingID " \
+            "left Join Product prd on inc.ProductID = prd.ProductID where CustomerID='{}';".format(customer_id)
+
     query_results = conn.execute(query).fetchall()
     conn.close()
-    shopping_lst = []
-
+    shopping_dict = {}
+    same_id_dit = {"list_name": None, "shop_items": []}
+    list_name = []
+    shopping_id_current = None
     for result in query_results:
-        lst = {
-            "shopping_id": result[0],
-            "list_name": result[2],
-        }
+        shopping_id_next = result[0]
 
-        shopping_lst.append(lst)
+        prod_id = result[2]
+        if prod_id is None:
+            lst = { }
 
-    return shopping_lst
+        else:
+
+            store_id, store_name, avg_price = fetch_procedure_minPriceArea(result[2])
+
+            prod_name = result[-1]
+            if prod_name is None:
+                prod_name = result[3]
+
+            lst = {
+                "shopping_id": result[0],
+                "list_name": result[1],
+                "prod_id": result[2],
+                "prod_name": prod_name,
+                "amount": result[4],
+                "unit": result[5],
+                "store_recomnd_id": store_id,
+                "store_recomnd": store_name,
+                "avg_price": round(avg_price,2)
+            }
+        if shopping_id_current is not None and shopping_id_next != shopping_id_current:
+
+            if same_id_dit["shop_items"][0] != {}:
+                total_est_price = fetch_procedure_sumShoppingList(shopping_id_current, same_id_dit["shop_items"][-1]["prod_id"])
+            list_info = {"shopping_id": shopping_id_current, "list_name": same_id_dit["list_name"]}
+            list_name.append(list_info)
+            same_id_dit["total_est_price"] = total_est_price
+            shopping_dict[shopping_id_current] = same_id_dit
+            same_id_dit = {"list_name": None, "shop_items": []}
+
+        same_id_dit["list_name"] = result[1]
+        same_id_dit["shop_items"] += [lst]
+        shopping_id_current = shopping_id_next
+
+
+    list_info = {"shopping_id": shopping_id_current, "list_name": same_id_dit["list_name"]}
+    list_name.append(list_info)
+
+    total_est_price = fetch_procedure_sumShoppingList(shopping_id_current, prod_id)
+    same_id_dit["total_est_price"] = total_est_price
+    shopping_dict[shopping_id_current] = same_id_dit
+
+    query_prod = "SELECT ProductID FROM ShoppingList natural Join include Where ShoppingID ='{}' ;".format(3)
+
+    conn = db.connect()
+    prod_lst = conn.execute(query_prod).fetchall()
+    conn.close()
+
+
+    return shopping_dict, list_name
+
+def create_shopping_list(list_name, customer_id='27'):
+
+    query = "SELECT ShoppingID FROM ShoppingList order by ShoppingID desc limit 1 ;"
+
+    conn = db.connect()
+    id = conn.execute(query).fetchone()[0]
+    new_id = int(id)+1
+
+    insert = 'Insert Into ShoppingList (ShoppingID, CustomerID, ListName) ' \
+             'VALUES ("{}", "{}", "{}");'.format(new_id, customer_id, list_name)
+    conn.execute(insert)
+    conn.close()
+
+def delete_shopping_list(shopping_id, customer_id='27'):
+    query_prod = "SELECT ProductID FROM ShoppingList natural Join include Where ShoppingID ='{}' ;".format(shopping_id)
+    conn = db.connect()
+    prod_lst = conn.execute(query_prod).fetchall()
+    print("prod_lst",prod_lst)
+
+    for prod in prod_lst:
+        prod_id = prod[0]
+        query_delete_prod = 'Delete From include  where ShoppingID = "{}" and ProductID = "{}";'.format(shopping_id,
+                                                                                                        prod_id)
+        conn.execute(query_delete_prod)
+
+    query_delete_list = 'Delete From ShoppingList where ShoppingID = "{}" and CustomerID = "{}";'.format(shopping_id, customer_id)
+
+    conn.execute(query_delete_list)
+
+
+
+def update_shopping_list(list_name, shopping_id, customer_id='27'):
+    conn = db.connect()
+    query = 'Update ShoppingList Set ListName= "{}" Where ShoppingID = "{}" and CustomerID = "{}";'.format(
+        list_name, shopping_id, customer_id)
+    conn.execute(query)
+    conn.close()
+
+def update_items_in_shopping_list(shopping_id, prod_id, prod_name, amount, unit, change_to_id, customer_id='27'):
+
+    conn = db.connect()
+    query = 'Update include Set ShoppingID="{}", ItemName= "{}", Amount = "{}",Unit="{}" ' \
+            'Where ShoppingID = "{}" and ProductID = "{}";'.format(
+        int(change_to_id), prod_name, amount, unit, int(shopping_id), prod_id)
+    conn.execute(query)
+    conn.close()
+
+def remove_items_in_shopping_list(shopping_id, prod_id):
+    conn = db.connect()
+    query = 'Delete From include where ShoppingID = "{}" and ProductID = "{}";'.format(shopping_id,prod_id)
+    conn.execute(query)
+    conn.close()
+
 
 def fetch_inventory(customer_id='27') -> dict:
     """Reads all items listed in the Product table
@@ -62,21 +193,25 @@ def fetch_inventory(customer_id='27') -> dict:
     """
 
     conn = db.connect()
-    # query = "select * from InventoryList natural join Product order by ExpirationDate;"
-    # query = "select * from InventoryList natural join Product order by InventoryID desc;"
-    query = "select * from InventoryList natural join Product where customerid='{}' order by ExpirationDate;".format(
+    query = "select * from InventoryList natural join Product where CustomerID='{}' order by ExpirationDate;".format(
         customer_id)
     query_results = conn.execute(query).fetchall()
+
+
     conn.close()
     inv_fridge_lst = []
     inv_freezer_lst = []
     inv_pantry_lst = []
 
     for result in query_results:
-        # print(result)
+        if result[3] is None:
+            prod_name = result[-2]
+        else:
+            prod_name = result[3]
+
         inv_item = {
             "inv_id": result[1],
-            "item_name": result[-2],
+            "item_name": prod_name,
             "space": result[5],
             "amount": result[6],
             "unit": result[7],
@@ -90,37 +225,38 @@ def fetch_inventory(customer_id='27') -> dict:
         else:
             inv_pantry_lst.append(inv_item)
 
-        # insert = """UPDATE InventoryList SET ItemName = %s WHERE InventoryID = %s;""" % ('%'+inv_item['item_name']+'%', '%'+inv_item['inv_id']+'%')
-    #     name, id = inv_item['item_name'], inv_item['inv_id']
-    #     if int(id[0:3]) < 631 and "Milk" not in name and " Cream" not in name:
-    #
-    #         insert = "UPDATE InventoryList SET ItemName = %s WHERE InventoryID = %s;" % (
-    #             '"' + name + '"', '"' + id + '"')
-    #         print(insert)
-    #         conn.execute(insert)
-    # conn.close()
-
     return inv_fridge_lst, inv_freezer_lst, inv_pantry_lst
 
 
-def insert_product_to_inventory(prod_id, space, exp_date, amount, unit, customer_id='27') -> None:
+def insert_product_to_inventory(prod_id, purch_date, price, amount, unit, exp_date, space, customer_id='27') -> None:
+    print("input", prod_id, purch_date, price, amount, unit, exp_date, space )
 
     conn = db.connect()
-    query_results = conn.execute("Select InventoryID from InventoryList order by InventoryID desc limit 1;").fetchall()
+    query_purch_id = conn.execute("Select PurchaseID from Purchase order by PurchaseID desc limit 1;").fetchone()
+    purch_id = str(int(query_purch_id[0]) + 1)
+    print("query_purch_id",query_purch_id,"purch_id",purch_id)
 
-    new_id = int(query_results[0][0]) + 1
+    query_inv_id = conn.execute("Select InventoryID from InventoryList order by InventoryID desc limit 1;").fetchone()
+    inv_id = int(query_inv_id[0]) + 1
+    print("query_inv_id", query_inv_id, "inv_id", inv_id)
 
-    query = 'Insert Into InventoryList (InventoryID, CustomerID, ProductID, ExpirationDate, StorageSpace, Amount, Unit) ' \
-            'VALUES ("{}", "{}", "{}", "{}","{}","{}","{}");'.format(
-        str(new_id), customer_id, prod_id, exp_date, space, amount, unit)
-    conn.execute(query)
+    query_insert_purchase = 'Insert Into Purchase (PurchaseID, InventoryID, PurchaseDate, CustomerID) ' \
+                            'VALUES ("{}", "{}", "{}", "{}");'.format(
+        purch_id, inv_id, purch_date,customer_id )
+    conn.execute(query_insert_purchase)
+
+    query_insert_has = 'Insert Into Has (H_purchaseID, H_productID, Price, Amount, Unit,ExpirationDate,StorageSpace) ' \
+                            'VALUES ("{}", "{}", "{}", "{}","{}","{}","{}");'.format(
+        purch_id, prod_id, float(price), int(amount), unit, exp_date,space)
+    conn.execute(query_insert_has)
+
     conn.close()
 
 
-def update_inventory_entry(inv_id, space, exp_date, amount, unit) -> None:
+def update_inventory_entry(inv_id, item_name, space, exp_date, amount, unit) -> None:
     conn = db.connect()
-    query = 'Update InventoryList Set ExpirationDate= "{}", StorageSpace= "{}", Amount = "{}",Unit="{}" Where InventoryID = "{}";'.format(
-        exp_date, space, amount, unit, inv_id)
+    query = 'Update InventoryList Set ItemName="{}", ExpirationDate= "{}", StorageSpace= "{}", Amount = "{}",Unit="{}" Where InventoryID = "{}";'.format(
+        item_name, exp_date, space, amount, unit, inv_id)
 
     conn.execute(query)
     conn.close()
@@ -128,23 +264,27 @@ def update_inventory_entry(inv_id, space, exp_date, amount, unit) -> None:
 
 def remove_inventory_by_id(inv_id) -> None:
     conn = db.connect()
+    # print(inv_id)
     query = 'Delete From InventoryList where InventoryID="{}";'.format(inv_id)
     conn.execute(query)
     conn.close()
 
-def insert_product_to_shopping(prod_id, shopping_id, amount, unit, customer_id='27') -> None:
-    # TODO: if new shopping list or existing list
 
+def insert_product_to_shopping(shopping_id, prod_id, amount, unit, customer_id='27') -> None:
     conn = db.connect()
-    query_results = conn.execute("Select ShoppingID from ShoppingList order by ShoppingID desc limit 1;").fetchall()
-    id_list = [] # fetch primary keys
-    newid = int(query_results[0][0]) + 1
-
     query_include = 'Insert Into include (ShoppingID, ProductID, Amount, Unit) ' \
-            'VALUES ("{}", "{}", "{}", "{}");'.format(
-        shopping_id,prod_id,amount,unit)
+                    'VALUES ("{}", "{}", "{}", "{}");'.format(shopping_id, prod_id, amount, unit)
     conn.execute(query_include)
     conn.close()
+
+
+def update_buy_items(shopping_id, prod_id, prod_name, amount, unit, customer_id='27') -> None:
+    conn = db.connect()
+    query = 'Update include Set Amount = "{}",Unit="{}",ItemName="{}" Where ShoppingID = "{}" and ProductID="{}";'.format(
+        amount, unit, prod_name, shopping_id, prod_id)
+    conn.execute(query)
+    conn.close()
+
 
 def update_prod_entry(prod_id, prod_name, plu_code, lifespan, cal) -> None:
     conn = db.connect()
@@ -160,21 +300,11 @@ def insert_new_product(prod_name, plu_code, lifespan, cal):
     query_results = conn.execute("Select ProductID from Product order by ProductID desc limit 1;").fetchall()
 
     new_id = int(query_results[0][0]) + 1
-
-    # prod_id_lst = []
-    # for result in query_results:
-    #     prod_id_lst.append(result[0])
-    #
-    # new_id = 10000
-    # while str(new_id) in prod_id_lst:
-    #     new_id += 1
-    # if str(new_id) in prod_id_lst:
-    #     rand_id = str(random.randint(10000, 99999))
-
     query = 'Insert Into Product (ProductID, ProductName, PLUcode, Lifespan, Calories) VALUES ("{}", "{}", "{}", "{}","{}");'.format(
         str(new_id), prod_name, plu_code, lifespan, cal)
     conn.execute(query)
     conn.close()
+    return str(new_id)
 
 
 def remove_product_by_id(prod_id) -> None:
@@ -186,7 +316,7 @@ def remove_product_by_id(prod_id) -> None:
 
 def fetch_store(search=False, search_word=None) -> dict:
     if search:
-        print("search word: [[{}]]".format(search_word))
+        # print("search word: [[{}]]".format(search_word))
         query = "Select * from Store where StoreName like '%s' order by StoreId desc, State, StoreName;" % (
                 '%%' + search_word + '%%')
 

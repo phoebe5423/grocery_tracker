@@ -61,19 +61,19 @@
 
 
         <div class="container table-responsive">
-            <!-- Alert Message -->
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-dismissible" role="alert">
-                            {{ message }}
-                            <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">X</button>-->
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+{#            <!-- Alert Message -->#}
+{#            {% with messages = get_flashed_messages() %}#}
+{#                {% if messages %}#}
+{#                    {% for message in messages %}#}
+{#                        <div class="alert alert-success alert-dismissible" role="alert">#}
+{#                            {{ message }}#}
+{#                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">X</button>#}
+{#                            <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span#}
+{#                                    aria-hidden="true">&times;</span></button>-->#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                {% endif %}#}
+{#            {% endwith %}#}
 
 
             <table class="table table-striped">
@@ -84,9 +84,9 @@
                     <th class="plu_code" style="width:15%">PLU code</th>
                     <th class="lifespan" style="width:15%">lifespan (days)</th>
                     <th class="cal" style="width:15%">Calories</th>
-                    <th class="add" style="width:8%"> Add</th>
-                    <th class="buy" style="width:8%"> Buy</th>
-                    <th class="update" style="width:8%"> Edit</th>
+                    <th class="add" style="width:14%"> Add to Home</th>
+                    <th class="buy" style="width:14%"> Add to Buy</th>
+{#                    <th class="update" style="width:8%"> Edit</th>#}
                     <!--Since FK constraint, deletion from user is not allowed
                     <th class="update" style="width:6%"> Remove</th>
                     -->
@@ -94,34 +94,7 @@
                 </thead>
 
                 <tbody>
-                <!--<tr>
-                    <td>Apple</td>
-                    <td>2010</td>
-                    <td>21</td>
-                    <td>50</td>
 
-                    <td>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#item-modal"><i class="fa fa-plus"></i></button>
-                    </td>
-                    <td>
-                        <button type="button" data-source="27"><i class="fa fa-shopping-cart"></i></button>
-                    </td>
-                    <td>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#item-modal"><i class="fa fa-pen"></i></button>
-                    </td>
-                    Since FK constraint, deletion from user is not allowed
-                    class="btn btn-warning add"
-                    class="btn btn-info buy"
-                    class="btn btn-secondary edit"
-                    <td>
-                        <button type="button" class="btn btn-danger remove" data-source="27"
-                                onclick="return confirm('Are You Sure To Delete ?')"><i class="fa fa-trash"
-                                                                                        aria-hidden="true"></i>
-                        </button>
-                    </td>
-
-                </tr>
-                -->
                 {% for item in product_lst %}
                 <tr>
                     <td>{{ item.prod_name }}</td>
@@ -140,12 +113,12 @@
                             <i
                                     class="fa fa-shopping-cart"></i></button>
                     </td>
-                    <td>
-
-                        <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
-                                data-bs-target="#modal-edit-product{{ item.prod_id }}"><i
-                                class="fa fa-pen"></i></button>
-                    </td>
+{#                    <td>#}
+{##}
+{#                        <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"#}
+{#                                data-bs-target="#modal-edit-product{{ item.prod_id }}"><i#}
+{#                                class="fa fa-pen"></i></button>#}
+{#                    </td>#}
                     <!--Since FK constraint, deletion from user is not allowed
                         <td>
 
@@ -156,53 +129,53 @@
                         -->
                 </tr>
                 <!-- Modal Edit Product-->
-                <div id="modal-edit-product{{ item.prod_id }}" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Update Product</h4>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <form action="{{ url_for('product_update') }}" method="POST" id="form-edit-prod">
-                                <div class="modal-body">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Product Name</span>
-                                        <input type="hidden" name="prod_id" value="{{ item.prod_id }}">
-                                        <input type="text" class="form-control" name="prod_name_edit"
-                                               value="{{ item.prod_name }}">
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text"><label>PLU code</label></span>
-                                        <input type="text" class="form-control" name="plu_code_edit"
-                                               value="{{ item.plu_code }}">
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text"><label>Lifespan</label></span>
-                                        <input type="text" class="form-control" name="lifespan_edit"
-                                               value="{{ item.lifespan }}">
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text"><label>Calories</label></span>
-                                        <input type="text" class="form-control" name="cal_edit"
-                                               value="{{ item.cal }}" placeholder="350">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-secondary "
-                                                data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                        <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save
-                                            changes
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+{#                <div id="modal-edit-product{{ item.prod_id }}" class="modal fade" role="dialog">#}
+{#                    <div class="modal-dialog">#}
+{#                        <div class="modal-content">#}
+{#                            <div class="modal-header">#}
+{#                                <h4 class="modal-title">Update Product</h4>#}
+{#                                <button type="button" class="btn-close" data-bs-dismiss="modal"#}
+{#                                        aria-label="Close"></button>#}
+{#                            </div>#}
+{#                            <form action="{{ url_for('product_update') }}" method="POST" id="form-edit-prod">#}
+{#                                <div class="modal-body">#}
+{#                                    <div class="input-group mb-3">#}
+{#                                        <span class="input-group-text">Product Name</span>#}
+{#                                        <input type="hidden" name="prod_id" value="{{ item.prod_id }}">#}
+{#                                        <input type="text" class="form-control" name="prod_name_edit"#}
+{#                                               value="{{ item.prod_name }}">#}
+{#                                    </div>#}
+{#                                    <div class="input-group mb-3">#}
+{#                                        <span class="input-group-text"><label>PLU code</label></span>#}
+{#                                        <input type="text" class="form-control" name="plu_code_edit"#}
+{#                                               value="{{ item.plu_code }}">#}
+{#                                    </div>#}
+{#                                    <div class="input-group mb-3">#}
+{#                                        <span class="input-group-text"><label>Lifespan</label></span>#}
+{#                                        <input type="text" class="form-control" name="lifespan_edit"#}
+{#                                               value="{{ item.lifespan }}">#}
+{#                                    </div>#}
+{#                                    <div class="input-group mb-3">#}
+{#                                        <span class="input-group-text"><label>Calories</label></span>#}
+{#                                        <input type="text" class="form-control" name="cal_edit"#}
+{#                                               value="{{ item.cal }}" placeholder="350">#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="modal-footer">#}
+{#                                    <div class="form-group">#}
+{#                                        <button type="button" class="btn btn-secondary "#}
+{#                                                data-bs-dismiss="modal">#}
+{#                                            Close#}
+{#                                        </button>#}
+{#                                        <button id="submit-edit-prod" type="submit" class="btn btn-primary">Save#}
+{#                                            changes#}
+{#                                        </button>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </form>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
 
                 <!-- Modal Add Product to Inventory List-->
                 <div id="modal-to-inventory{{ item.prod_id }}" class="modal fade" role="dialog">
@@ -220,40 +193,42 @@
                                         <p class="fs-5"> {{ item.prod_name }}</p>
                                     </div>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
-                                        <select class="form-select">
-                                            <option selected>Choose a space..</option>
-                                            <option name="space" value="fridge">Fridge</option>
-                                            <option name="space" value="freezer">Freezer</option>
-                                            <option name="space" value="pantry">Pantry</option>
-                                        </select>
-                                        <!-- Button version of selecting a space-->
-                                        <!--
-                                        <span class="input-group-text" id="addon-wrapping">Where you put?</span>
-                                        <input class="btn-check" type="radio" value="fridge" name="space" id="fridge">
-                                        <label class="btn btn-outline-success" for="fridge">Fridge</label>
-                                        <input class="btn-check" type="radio" value="freezer" name="space" id="freezer">
-                                        <label class="btn btn-outline-success" for="freezer">Freezer</label>
-                                        <input class="btn-check" type="radio" value="pantry" name="space" id="pantry">
-                                        <label class="btn btn-outline-success" for="pantry">Pantry</label>
-                                        -->
+                                            <span class="input-group-text col-sm-2.5"><label
+                                                        for="purch_date">Purchase Date</label></span>
+                                        <input class="form-control" id="purch_date" name="purch_date" placeholder="YYYY/MM/DD"
+                                               type="text"/>
                                     </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text col-sm-2.5"><label for="price">Price</label></span>
+                                        <input class="form-control" id="price" name="price" placeholder="5.4"
+                                               type="text"/>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text col-sm-2.5"><label for="space">Storage Space</label></span>
+                                        <select class="form-control" name="space">
+{#                                            <option >Choose a space..</option>#}
+                                            <option name="space" value="Fridge">Fridge</option>
+                                            <option name="space" value="Freezer">Freezer</option>
+                                            <option name="space" value="Pantry">Pantry</option>
+                                        </select>
+                                    </div>
+
                                     <div class="input-group mb-3">
                                                 <span class="input-group-text col-sm-2.5"><label
                                                         for="date">Expiration Date</label></span>
-                                        <input class="form-control" id="date" name="date" placeholder="YYYY/MM/DD"
+                                        <input class="form-control" id="exp_date" name="exp_date" placeholder="YYYY/MM/DD"
                                                type="text"/>
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-calendar-check-o"></i>
-                                        </div>
+{#                                        <div class="input-group-addon">#}
+{#                                            <i class="fa fa-calendar-check-o"></i>#}
+{#                                        </div>#}
                                     </div>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text col-sm-2.5"><label>Amount</label></span>
                                         <input type="text" class="form-control col-sm-2.5" name="amount"
                                                placeholder="3">
                                         <span class="input-group-addon">
-                                                    <label>
-                                                    <select class="form-select selectpicker" data-width="auto">
+{#                                                    <label class="form-select selectpicker" data-width="auto" for="unit-list"></label>#}
+                                                    <select class="form-control" id="unit-list" name="unit" data-width="auto">
                                                         <option name="unit" value="unit">unit</option>
                                                         <option name="unit" value="Lb">Lb</option>
                                                         <option name="unit" value="kg">kg</option>
@@ -263,7 +238,7 @@
                                                         <option name="unit" value="bunch">bunch</option>
                                                     </select>
 {#                                                        <input type="hidden" name="unit" value="{{ item.prod_id }}">#}
-                                                    </label>
+
                                                 </span>
                                     </div>
                                 </div>
@@ -294,49 +269,50 @@
                                         <input type="hidden" name="prod_id" value="{{ item.prod_id }}">
                                         <p class="fs-5"> {{ item.prod_name }}</p>
                                     </div>
-                                    <div class="input-group mb-3">
-                                        <!--
-                                        <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
-                                        <select class="form-select">
-                                            <option selected>Choose a space..</option>
-                                            <option name="space" value="fridge">Fridge</option>
-                                            <option name="space" value="freezer">Freezer</option>
-                                            <option name="space" value="pantry">Pantry</option>
-                                        </select>
-                                        -->
-                                        <!-- Button version of selecting a space-->
 
-                                        <div class="input-group-text" id="addon-wrapping">Choose a List</div>
-                                            {% for lst in shopping_lst %}
-                                            <div>
-                                                <input class="btn-check" type="radio" name="list" id="shop">
-                                                <label class="btn btn-outline-success"
-                                                       for="shop">{{ lst.list_name }}</label>
-                                            </div>
+                                <div class="input-group mb-2">
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text col-sm-2.5"><label>Choose a List</label></span>
+                                        <select class="form-control" name="buy_list" >
+                                            {% for info in list_name %}
+                                            <option name="buy_list" value="{{ info.shopping_id }}" >{{ info.list_name }}</option>
                                             {% endfor %}
-                                            <!--
-                                            <input class="btn-check" type="radio" value="freezer" name="list" id="freezer">
-                                            <label class="btn btn-outline-success" for="freezer">Freezer</label>
-                                            <input class="btn-check" type="radio" value="pantry" name="list" id="pantry">
-                                            <label class="btn btn-outline-success" for="pantry">Pantry</label>
-                                            -->
 
-                                            </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close
-                                                    </button>
-                                                    <button id="submit-add-toinv" type="submit" class="btn btn-primary">
-                                                        Add
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            </form>
-                                            </div>
-                                            </div>
-                                            </div>
+                                        </select>
+                                        <a href="/to_buy/"><button  type="button" class="btn btn-outline-dark">Create New List</button></a>
+                                    </div>
+
+                                    <div class="input-group mb-2">
+                                            <span class="input-group-text col-sm-2.5"><label>Amount</label></span>
+                                            <input type="text" class="form-control col-sm-2.5" name="amount"
+                                                   placeholder="3">
+                                            <span class="input-group-addon">
+                                                <select class="form-control" id="unit-list" name="unit" data-width="auto">
+                                                    <option name="unit" value="unit">unit</option>
+                                                    <option name="unit" value="Lb">Lb</option>
+                                                    <option name="unit" value="kg">kg</option>
+                                                    <option name="unit" value="oz">oz</option>
+                                                    <option name="unit" value="pack" selected>pack</option>
+                                                    <option name="unit" value="bag">bag</option>
+                                                    <option name="unit" value="bunch">bunch</option>
+                                                </select>
+                                            </span>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button id="submit-add-toinv" type="submit" class="btn btn-primary">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
 
                     {% endfor %}

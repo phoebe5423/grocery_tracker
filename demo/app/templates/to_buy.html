@@ -1,91 +1,170 @@
-{% block title %}Product List{% endblock %}
+{% block title %}Grocery To Buy{% endblock %}
 {% extends "base.html" %}
 {% block body %}
 
-    <section class="item">
-        <div class="container">
-            <form action="" class="search-form my-2 my-lg-0">
-                <input type="search" placeholder="Search product name..." id="search-box">
-                <label for="search-box" class="fas fa-search"></label>
-<!--                <button type="submit" class="btn my-2 my-sm-0" data-bs-toggle="modal" data-bs-target="#item-modal" data-source="New Item">Add Item</button>-->
-            </form>
-        <!-- Button trigger modal -->
-
-<!--        <div style="text-align: right;">-->
-<!--        <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#task-modal" data-source="New Task">Add Item</button>-->
-<!--        <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#item-modal" data-source="New Item">Add Item</button>-->
-
-
-        <div class="modal fade" id="item-modal" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="Label">Add a new item</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="name-form-display" aria-describedby="basic-addon1">Product Name</span>
+    <section class="home">
+        <div class="container" style="text-align: right">
+            <button type="button" class="btn new"><a href="{{ url_for('product_list') }}">Add item</a></button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-create-shoplist">Create List</button>
+        </div>
+        <div class="modal fade" id="modal-create-shoplist" aria-labelledby="Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="Label">Create New List</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <input type="text" class="form-control" placeholder="apple" aria-label="task-name" aria-describedby="basic-addon1">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="task-form-display" aria-describedby="basic-addon2">Lifespan</span>
-                    </div>
-                    <input type="text" class="form-control" placeholder="14" aria-label="task-name" aria-describedby="basic-addon2">
+                    <form action="{{ url_for('buy_list_create') }}" method="POST" id="form-create-list">
+                        <div class="modal-body">
+                            <input type="text" class="form-control" name="list_name_create" placeholder="New List Name">
 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button id="submit-create-list" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button id="submit-task" type="button" class="btn btn-primary">Save changes</button>
-            </div>
-            </div>
-        </div>
         </div>
 
-    </div>
+        {% for key, shop_list in shopping_dict.items() %}
+            <div class="container">
+            <h3 class="title">  <span>{{ shop_list.list_name }}</span>
+                    <button type="button" class="btn" style="color:#666;font-size:16px;"
+                         data-bs-toggle="modal" data-bs-target="#modal-edit-shoplist{{ key }}">Edit</button>
+                    <a align="right" href="/buy/list-delete/{{ key }}" type="button" id="{{ key }}" class="btn" style="color:#666;font-size:16px;"
+                            onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
 
+            </h3>
+            </div>
 
+            <div class="modal fade" id="modal-edit-shoplist{{ key }}" aria-labelledby="Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="Label">{{ shop_list.list_name }}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('buy_list_update') }}" method="POST" id="form-edit-list">
+                        <div class="modal-body">
+                            <h5 >Edit List Name</h5>
+                            <input type="hidden" name="shopping_id_edit" value="{{ key }}">
+                            <input type="text" class="form-control" name="list_name_edit" value="{{ shop_list.list_name }}">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button id="submit-edit-list" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="container table-responsive">
-        <table class="table table-striped">
-            <thead>
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <th class="name" style="width:44%">Item</th>
-                    <th class="amount" colspan="2" style="width:20%">Amount</th>
-                    <th class="update" style="width:8%">Edit</th>
-                    <th class="update" style="width:8%">Remove</th>
+                    <th class="name" style="width:30%">Item</th>
+                    <th class="amount" colspan="2" style="width:16%">Amount</th>
+                    <th class="store" style="width:12%">Store Recommended</th>
+                    <th class=" avgprice" style="width:12%">Cheapest Price</th>
+                    <th class="update" style="width:10%">Edit</th>
+                    <th class="update" style="width:10%">Remove</th>
                 </tr>
-            </thead>
+                </thead>
 
-            <tbody>
+                <tbody>
+                {% for item in shop_list.shop_items %}
+                    {% if item %}
+                    <tr>
+                        <td>{{ item.prod_name }}</td>
+                        <td>{{ item.amount }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>{{ item.store_recomnd }}</td>
+                        <td>{{ item.avg_price }}</td>
 
-                <tr>
-                    <td>Apple</td>
-                    <td>21</td>
-                    <td>50</td>
-                    <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                    <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                </tr>
+                        <td>
+                            <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
+                                    data-bs-target="#modal-edit-shop-{{ item.shopping_id }}-{{ item.prod_id }}"><i
+                                    class="fa fa-pen"></i></button>
+                        </td>
+                        <td><a href="/buy/item-delete/{{ item.shopping_id }}-{{ item.prod_id }}" type="button"
+                               class="btn btn-danger btn-delete"
+                               id="{{ item.shopping_id }}-{{ item.prod_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
 
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.prod_name }}</td>
-                    <td>{{ item.plu_code }}</td>
-                    <td>{{ item.lifespan }}</td>
-                    <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#task-modal"
-                                data-source="{{item.id}}" data-content="{{item.item_name}}"><i class="fa fa-pen" aria-hidden="true"></i></button></td>
-                    <td><button type="button" class="btn btn-danger remove" data-source="{{item.id}}"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                </tr>
+
+                    <div id="modal-edit-shop-{{ item.shopping_id }}-{{ item.prod_id }}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Edit item: {{  item.list_name  }} </h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form action="{{ url_for('buy_item_update') }}" method="POST" id="form-edit-buy">
+                                    <div class="modal-body">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Item Name</span>
+                                            <input type="hidden" name="shopping_id_edit" value="{{ item.shopping_id }}">
+                                            <input type="hidden" name="prod_id_edit" value="{{ item.prod_id }}">
+                                            <input type="text" class="form-control" name="prod_name_edit"
+                                                   value="{{ item.prod_name }}">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><label>Amount</label></span>
+                                            <input type="text" class="form-control" name="amount_edit"
+                                                   value="{{ item.amount }}">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><label>Unint</label></span>
+                                            <input type="text" class="form-control" name="unit_edit"
+                                                   value="{{ item.unit }}">
+                                        </div>
+
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text col-sm-2.5"><label>Change List</label></span>
+                                            <select class="form-control" name="list_edit">
+                                                {% for info in list_name %}
+                                                <option name="list_edit" value="{{ info.shopping_id }}" >{{ info.list_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary "
+                                                    data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button id="submit-edit-buy" type="submit" class="btn btn-primary">Save
+                                                changes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 {% endfor %}
+                <tr>
+                    <td class="empty" colspan="3"></td>
+                    <td class="total_label" >*<b>Total Estimated Price</b></td>
+                    <td class="total"><b>{{ shop_list.total_est_price }}</b></td>
+                    <td class="empty" colspan="2" style="color:#4e555b;font-size:14px;">*based on all purchase histories</td>
+                </tr>
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
         </div>
+{#            </section>#}
+    {% endfor %}
 
     </section>
+
 
 {% endblock %}

@@ -85,23 +85,7 @@
                 </div>
             </div>
         </div>
-
-
         <div class="container table-responsive">
-            <!-- Alert Message -->
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-dismissible" role="alert">
-                            {{ message }}
-                            <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">X</button>-->
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-
             <table class="table table-striped">
 
                 <thead>
@@ -113,8 +97,8 @@
                     <th class="state" style="width:6%">State</th>
                     <th class="postal" style="width:8%">Postal</th>
                     <th class="phone" style="width:15%">Phone</th>
-                    <th class="update" style="width:6%"> Edit</th>
-                    <th class="update" style="width:6%"> Remove</th>
+{#                    <th class="update" style="width:6%"> Edit</th>#}
+{#                    <th class="update" style="width:6%"> Remove</th>#}
                 </tr>
                 </thead>
 
@@ -130,17 +114,17 @@
                         <td>{{ store.postal }}</td>
                         <td>{{ store.phone }}</td>
 
-                        <td>
-                            <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
-                                    data-bs-target="#modal-edit-store{{store.store_id}}"><i
-                                    class="fa fa-pen" aria-hidden="true"></i></button>
-                        </td>
-                        <td>
-                            <a href="/store/delete/{{ store.store_id }}" type="button" class="btn btn-danger btn-delete"
-                               id="{{ store.store_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
-                                    class="fa fa-trash" aria-hidden="true"></i></a>
-
-                        </td>
+{#                        <td>#}
+{#                            <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"#}
+{#                                    data-bs-target="#modal-edit-store{{store.store_id}}"><i#}
+{#                                    class="fa fa-pen" aria-hidden="true"></i></button>#}
+{#                        </td>#}
+{#                        <td>#}
+{#                            <a href="/store/delete/{{ store.store_id }}" type="button" class="btn btn-danger btn-delete"#}
+{#                               id="{{ store.store_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i#}
+{#                                    class="fa fa-trash" aria-hidden="true"></i></a>#}
+{##}
+{#                        </td>#}
                     </tr>
                     <!-- Modal Edit -->
                     <div id="modal-edit-store{{ store.store_id }}" class="modal fade" role="dialog">

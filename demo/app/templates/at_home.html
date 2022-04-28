@@ -1,4 +1,4 @@
-{% block title %}Grocery Stores{% endblock %}
+{% block title %}Grocery At Home{% endblock %}
 {% extends "base.html" %}
 {% block body %}
 
@@ -18,25 +18,16 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="name" style="width:44%">Item</th>
-                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="name" style="width:30%">Item</th>
+                            <th class="amount" colspan="2" style="width:16%">Amount</th>
                             <th class="expiration" style="width:20%">Used By</th>
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
+{#                            <th class="buy" style="width:8%"> To Buy</th>#}
                         </tr>
                         </thead>
 
                         <tbody>
-                        <!--
-                        {#                        <tr>#}
-                        {#                            <td>Apple</td>#}
-                        {#                            <td>21</td>#}
-                        {#                            <td>Lb</td>#}
-                        {#                            <td>2022-05-06</td>#}
-                        {#                            <td><button type="button" class="btn btn-secondary edit" data-bs-toggle="modal" data-bs-target="#item-edit-modal"><i class="fa fa-pen" aria-hidden="true"></i></button></td>#}
-                        {#                            <td><button type="button" class="btn btn-danger remove" ><i class="fa fa-trash" aria-hidden="true"></i></button></td>#}
-                        {#                        </tr>#}
-                        -->
                         {% for item in fridge %}
                             <tr>
                                 <td>{{ item.item_name }}</td>
@@ -52,8 +43,14 @@
                                 <td><a href="/inventory-delete/{{ item.inv_id }}" type="button"
                                        class="btn btn-danger btn-delete"
                                        id="{{ item.inv_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
-                                        class="fa fa-trash" aria-hidden="true"></i></a></td>
-
+                                        class="fa fa-trash"></i></a>
+                                </td>
+{#                                <td>#}
+{#                                    <button type="button" class="btn btn-info buy" data-bs-toggle="modal"#}
+{#                                            data-bs-target="#modal-to-shopping{{ item.prod_id }}" data-source="{{ item.prod_id }}">#}
+{#                                        <i class="fa fa-shopping-cart"></i></button>#}
+{#                                </td>#}
+                            </tr>
 
                             <!-- Modal Edit Inventory-->
                             <div id="modal-edit-inv{{ item.inv_id }}" class="modal fade" role="dialog">
@@ -79,8 +76,18 @@
                                                 </div>
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text"><label>Unint</label></span>
-                                                    <input type="text" class="form-control" name="unit_edit"
-                                                           value="{{ item.unit }}">
+{#                                                    <input type="text" class="form-control" name="unit_edit"#}
+{#                                                           value="{{ item.unit }}">#}
+                                                    <select class="form-control" name="unit_edit">
+                                                                <option name="unit_edit" value="{{ item.unit }}" selected>{{ item.unit }}</option>
+                                                                <option name="unit_edit" value="unit">unit</option>
+                                                                <option name="unit_edit" value="Lb">Lb</option>
+                                                                <option name="unit_edit" value="kg">kg</option>
+                                                                <option name="unit_edit" value="oz">oz</option>
+                                                                <option name="unit_edit" value="pack">pack</option>
+                                                                <option name="unit_edit" value="bag">bag</option>
+                                                                <option name="unit_edit" value="bunch">bunch</option>
+                                                            </select>
                                                 </div>
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text"><label>Expiration Date</label></span>
@@ -90,11 +97,11 @@
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
 
-                                                    <select class="form-select">
-                                                        <option selected>Choose a space..</option>
-                                                        <option name="space_edit" value="fridge" selected >Fridge</option>
-                                                        <option name="space_edit" value="freezer">Freezer</option>
-                                                        <option name="space_edit" value="pantry">Pantry</option>
+                                                    <select class="form-control"  name="space_edit">
+                                                        <option >Choose a space</option>
+                                                        <option name="space_edit" value="Fridge" selected>Fridge</option>
+                                                        <option name="space_edit" value="Freezer">Freezer</option>
+                                                        <option name="space_edit" value="Pantry">Pantry</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -126,11 +133,12 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="name" style="width:44%">Item</th>
-                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="name" style="width:30%">Item</th>
+                            <th class="amount" colspan="2" style="width:16%">Amount</th>
                             <th class="expiration" style="width:20%">Used By</th>
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
+{#                            <th class="buy" style="width:8%"> To Buy</th>#}
                         </tr>
                         </thead>
 
@@ -141,18 +149,24 @@
                                 <td>{{ item.amount }}</td>
                                 <td>{{ item.unit }}</td>
                                 <td>{{ item.exp_date }}</td>
-
                                 <td>
                                     <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
-                                            data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i>
-                                    </button>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger remove"><i class="fa fa-trash"
-                                                                                           aria-hidden="true"></i>
-                                    </button>
+                                            data-bs-target="#modal-edit-inv{{ item.inv_id }}"><i
+                                            class="fa fa-pen"></i></button>
                                 </td>
 
+                                <td><a href="/inventory-delete/{{ item.inv_id }}" type="button"
+                                       class="btn btn-danger btn-delete"
+                                       id="{{ item.inv_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                        class="fa fa-trash"></i></a>
+                                </td>
+{#                                <td>#}
+{#                                    <button type="button" class="btn btn-info buy" data-bs-toggle="modal"#}
+{#                                            data-bs-target="#modal-to-shopping{{ item.prod_id }}" data-source="{{ item.prod_id }}">#}
+{#                                        <i class="fa fa-shopping-cart"></i></button>#}
+{#                                </td>    #}
+
+                            </tr>
                                 <!-- Modal Edit Inventory-->
                                 <div id="modal-edit-inv{{ item.inv_id }}" class="modal fade" role="dialog">
                                     <div class="modal-dialog">
@@ -177,8 +191,18 @@
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text"><label>Unint</label></span>
-                                                        <input type="text" class="form-control" name="unit_edit"
-                                                               value="{{ item.unit }}">
+{#                                                        <input type="text" class="form-control" name="unit_edit"#}
+{#                                                               value="{{ item.unit }}">#}
+                                                        <select class="form-control" name="unit_edit">
+                                                                <option name="unit_edit" value="{{ item.unit }}" selected>{{ item.unit }}</option>
+                                                                <option name="unit_edit" value="unit">unit</option>
+                                                                <option name="unit_edit" value="Lb">Lb</option>
+                                                                <option name="unit_edit" value="kg">kg</option>
+                                                                <option name="unit_edit" value="oz">oz</option>
+                                                                <option name="unit_edit" value="pack">pack</option>
+                                                                <option name="unit_edit" value="bag">bag</option>
+                                                                <option name="unit_edit" value="bunch">bunch</option>
+                                                            </select>
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text"><label>Expiration Date</label></span>
@@ -188,11 +212,11 @@
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
 
-                                                        <select class="form-select">
-                                                            <option selected>Choose a space..</option>
-                                                            <option name="space_edit" value="fridge" >Fridge</option>
-                                                            <option name="space_edit" value="freezer" selected>Freezer</option>
-                                                            <option name="space_edit" value="pantry">Pantry</option>
+                                                        <select class="form-control"  name="space_edit">
+                                                            <option >Choose a space</option>
+                                                            <option name="space_edit" value="Fridge" >Fridge</option>
+                                                            <option name="space_edit" value="Freezer" selected>Freezer</option>
+                                                            <option name="space_edit" value="Pantry">Pantry</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -225,11 +249,12 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th class="name" style="width:44%">Item</th>
-                            <th class="amount" colspan="2" style="width:20%">Amount</th>
+                            <th class="name" style="width:30%">Item</th>
+                            <th class="amount" colspan="2" style="width:16%">Amount</th>
                             <th class="expiration" style="width:20%">Used By</th>
                             <th class="update" style="width:8%">Edit</th>
                             <th class="update" style="width:8%">Remove</th>
+{#                            <th class="buy" style="width:8%"> To Buy</th>#}
                         </tr>
                         </thead>
 
@@ -243,14 +268,23 @@
 
                                 <td>
                                     <button type="button" class="btn btn-secondary edit" data-bs-toggle="modal"
-                                            data-bs-target="#task-modal"><i class="fa fa-pen" aria-hidden="true"></i>
-                                    </button>
+                                            data-bs-target="#modal-edit-inv{{ item.inv_id }}"><i
+                                            class="fa fa-pen"></i></button>
                                 </td>
+
                                 <td>
-                                    <button type="button" class="btn btn-danger remove"><i class="fa fa-trash"
-                                                                                           aria-hidden="true"></i>
-                                    </button>
+                                    <a href="/inventory-delete/{{ item.inv_id }}" type="button"
+                                       class="btn btn-danger btn-delete"
+                                       id="{{ item.inv_id }}" onclick="return confirm('Are You Sure To Delete ?')"><i
+                                        class="fa fa-trash"></i></a>
                                 </td>
+{#                                <td>#}
+{#                                    <button type="button" class="btn btn-info buy" data-bs-toggle="modal"#}
+{#                                            data-bs-target="#modal-to-shopping{{ item.prod_id }}" data-source="{{ item.prod_id }}">#}
+{#                                        <i class="fa fa-shopping-cart"></i></button>#}
+{#                                </td>#}
+
+                            </tr>
 
 
 
@@ -278,8 +312,20 @@
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text"><label>Unint</label></span>
-                                                        <input type="text" class="form-control" name="unit_edit"
-                                                               value="{{ item.unit }}">
+{#                                                        <input type="text" class="form-control" name="unit_edit"#}
+{#                                                               value="{{ item.unit }}">#}
+{#                                                        <span class="input-group-addon">#}
+                                                            <select class="form-control" name="unit_edit">
+                                                                <option name="unit_edit" value="{{ item.unit }}" selected>{{ item.unit }}</option>
+                                                                <option name="unit_edit" value="unit">unit</option>
+                                                                <option name="unit_edit" value="Lb">Lb</option>
+                                                                <option name="unit_edit" value="kg">kg</option>
+                                                                <option name="unit_edit" value="oz">oz</option>
+                                                                <option name="unit_edit" value="pack">pack</option>
+                                                                <option name="unit_edit" value="bag">bag</option>
+                                                                <option name="unit_edit" value="bunch">bunch</option>
+                                                            </select>
+{#                                                        </span>#}
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text"><label>Expiration Date</label></span>
@@ -288,12 +334,11 @@
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text col-sm-2.5"><label>Storage Space</label></span>
-
-                                                        <select class="form-select">
-                                                            <option selected>Choose a space..</option>
-                                                            <option name="space_edit" value="fridge">Fridge</option>
-                                                            <option name="space_edit" value="freezer">Freezer</option>
-                                                            <option name="space_edit" value="pantry" selected>Pantry</option>
+                                                        <select class="form-control"  name="space_edit">
+                                                            <option>Choose a space</option>
+                                                            <option name="space_edit" value="Fridge">Fridge</option>
+                                                            <option name="space_edit" value="Freezer">Freezer</option>
+                                                            <option name="space_edit" value="Pantry" selected>Pantry</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -312,6 +357,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                         {% endfor %}
 
                         </tbody>

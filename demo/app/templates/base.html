@@ -21,7 +21,7 @@
         <nav class="navbar">
             <a class="nav-link" href="{{ url_for('at_home') }}">at home</a>
             <a class="nav-link" href="{{ url_for('to_buy') }}">to buy</a>
-            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+{#            <!-- <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a> -->#}
             <a class="nav-link" href="{{ url_for('find_stores') }}">find stores</a>
         </nav>
 
@@ -163,7 +163,8 @@
     {% block body %}
     {% endblock %}
 </main>
-<section class="credit">App developed for CS411 UIUC by Team48.</section>
+{#<section class="credit">App developed for CS411 UIUC by Team48.</section>#}
+<section class="credit">Grocery Tracker &copy; 2022</section>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
