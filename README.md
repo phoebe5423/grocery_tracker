@@ -1,7 +1,7 @@
 # Grocery Tracker
 
 ## Install
-click==8.1.2  
+``click==8.1.2  
 Flask==2.1.1  
 Flask-SQLAlchemy==2.5.1  
 greenlet==1.1.2  
@@ -13,7 +13,7 @@ PyMySQL==1.0.2
 PyYAML==6.0 
 SQLAlchemy==1.4.34  
 Werkzeug==2.1.1  
-zipp==3.7.0  
+zipp==3.7.0  ``
 
 ## Project Description
 The project aims to develop an application that helps users record their purchased products, and the application designer can utilize the data provided by users to analyze consumer preferences. With this application, users can easily track the food purchase history, the food's condition, and the timing of supplementing new food. Users can compare the price and quality of the same products sold in different stores and know which store will cost them less or is worth visiting again. By analyzing consumer preferences, these data can be used in precision marketing. The stores can plan a promotion to their main targeted audiences.
